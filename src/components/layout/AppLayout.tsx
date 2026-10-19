@@ -21,10 +21,30 @@ export const AppLayout: React.FC = () => {
   const [selectedToolId, setSelectedToolId] = useState<ToolId>('json-formatter')
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+    try {
+      const saved = localStorage.getItem('devforge_theme')
+      if (saved !== null) {
+        return saved === 'dark'
+      }
+    } catch {
+      // ignore
+    }
+    return true // Default theme is Dark
   })
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false)
   const [corsModalOpen, setCorsModalOpen] = useState<boolean>(false)
+
+  const handleToggleTheme = () => {
+    setIsDarkMode((prev) => {
+      const next = !prev
+      try {
+        localStorage.setItem('devforge_theme', next ? 'dark' : 'light')
+      } catch {
+        // ignore
+      }
+      return next
+    })
+  }
 
   // Injected request for API client when navigated from Explorer
   const [pendingApiRequest, setPendingApiRequest] = useState<HttpRequest | undefined>(undefined)
@@ -84,7 +104,7 @@ export const AppLayout: React.FC = () => {
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             isDarkMode={isDarkMode}
-            onToggleTheme={() => setIsDarkMode(!isDarkMode)}
+            onToggleTheme={handleToggleTheme}
             onOpenCorsGuide={() => setCorsModalOpen(true)}
           />
 

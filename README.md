@@ -63,7 +63,7 @@ DevForge được xây dựng theo kiến trúc Single Page Application (SPA), c
 - **Predefined APIs Explorer (F-10):** Tích hợp sẵn mẫu API công khai có CORS như **JSONPlaceholder** và **DummyJSON**; hỗ trợ tính năng **Quick Run** và **Open in API Client**.
 
 ### 3. Trải nghiệm & Giao diện (F-06, F-07, F-08)
-- Giao diện Cockpit phong cách lập trình viên hiện đại, hỗ trợ chuyển đổi **Dark / Light Mode**.
+- Giao diện Cockpit phong cách lập trình viên hiện đại, mặc định kích hoạt giao diện tối (**Dark Mode**) và hỗ trợ lưu trạng thái tùy chọn qua `localStorage`.
 - Thanh tìm kiếm lọc công cụ theo thời gian thực.
 - Tiện ích Clipboard thống nhất với thông báo feedback trực quan và cơ chế fallback.
 - Thiết kế responsive tối ưu cho cả desktop lẫn thiết bị di động.
