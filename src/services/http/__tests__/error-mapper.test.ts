@@ -62,4 +62,25 @@ describe('HTTP Error Mapper', () => {
     expect(err.group).toBe('timeout')
     expect(err.title).toBe('Request Timeout')
   })
+
+  it('maps Axios ERR_NETWORK error to CORS / Network error', () => {
+    const networkErr = { isAxiosError: true, code: 'ERR_NETWORK', message: 'Network Error' }
+    const err = mapHttpError(networkErr)
+    expect(err.group).toBe('cors')
+    expect(err.title).toContain('Network / CORS Error')
+  })
+
+  it('maps Axios CanceledError to cancelled state', () => {
+    const cancelErr = { isAxiosError: true, code: 'ERR_CANCELED', name: 'CanceledError', message: 'canceled' }
+    const err = mapHttpError(cancelErr)
+    expect(err.group).toBe('abort')
+    expect(err.title).toBe('Request Cancelled')
+  })
+
+  it('maps Axios ECONNABORTED to timeout error', () => {
+    const timeoutErr = { isAxiosError: true, code: 'ECONNABORTED', message: 'timeout of 30000ms exceeded' }
+    const err = mapHttpError(timeoutErr, 30000)
+    expect(err.group).toBe('timeout')
+    expect(err.title).toBe('Request Timeout')
+  })
 })

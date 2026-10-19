@@ -1,3 +1,4 @@
+import { isAxiosError, isCancel } from 'axios'
 import type { HttpErrorInfo, HttpResponse } from '@/types/http'
 
 export function mapHttpError(
@@ -39,7 +40,12 @@ export function mapHttpError(
     }
   }
 
-  if (err instanceof DOMException && err.name === 'AbortError') {
+  // Cancellation & Abort checks (DOMException AbortError or Axios CanceledError)
+  if (
+    (err instanceof DOMException && err.name === 'AbortError') ||
+    isCancel(err) ||
+    (isAxiosError(err) && (err.code === 'ERR_CANCELED' || err.name === 'CanceledError'))
+  ) {
     return {
       group: 'abort',
       title: 'Request Cancelled',
@@ -48,9 +54,13 @@ export function mapHttpError(
   }
 
   const errMsg = err instanceof Error ? err.message : String(err)
+  const isTimeout =
+    (isAxiosError(err) && err.code === 'ECONNABORTED') ||
+    errMsg.toLowerCase().includes('timeout') ||
+    errMsg.toLowerCase().includes('timed out')
 
   // Timeout error check
-  if (errMsg.toLowerCase().includes('timeout') || errMsg.toLowerCase().includes('timed out')) {
+  if (isTimeout) {
     return {
       group: 'timeout',
       title: 'Request Timeout',
@@ -60,8 +70,9 @@ export function mapHttpError(
   }
 
   // Network / CORS check
-  // In modern browsers, Fetch throws a generic TypeError: Failed to fetch on CORS block or offline
   if (
+    (isAxiosError(err) && err.code === 'ERR_NETWORK') ||
+    errMsg.includes('Network Error') ||
     errMsg.includes('Failed to fetch') ||
     errMsg.includes('NetworkError') ||
     errMsg.includes('Load failed') ||

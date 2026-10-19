@@ -6,7 +6,8 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue.svg)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-8-purple.svg)](https://vite.dev/)
 [![Ant Design](https://img.shields.io/badge/Ant%20Design-5%2B-1677ff.svg)](https://ant.design/)
-[![Tests](https://img.shields.io/badge/Vitest-46%20passed-brightgreen.svg)](https://vitest.dev/)
+[![Axios](https://img.shields.io/badge/Axios-1.x-5a29e4.svg)](https://axios-http.com/)
+[![Tests](https://img.shields.io/badge/Vitest-49%20passed-brightgreen.svg)](https://vitest.dev/)
 [![Version](https://img.shields.io/badge/Version-1.3.0-blue.svg)]()
 
 ---
@@ -77,7 +78,7 @@ DevForge được xây dựng theo kiến trúc Single Page Application (SPA), c
 | **Language** | TypeScript | 5.x / 7.x (Strict mode) |
 | **Bundler** | Vite | 8.x |
 | **Design System** | Ant Design (`antd`) & `@ant-design/icons` | 5.x / 6.x |
-| **HTTP Client** | Browser Fetch API + `AbortController` | Native |
+| **HTTP Client** | Axios + `AbortController` | ^1.x |
 | **Testing** | Vitest | 5.x |
 | **Date Time** | Day.js | 1.x |
 
@@ -191,9 +192,14 @@ npm run preview
     - `RegexReplaceTab.tsx`: Playground thay thế chuỗi (substitution) hỗ trợ cú pháp `$1`, `$2`, `$&`.
     - `RegexBuilderModal.tsx`: Modal tạo nhanh biểu thức chính quy theo cấu hình trực quan.
     - `RegexCheatSheetModal.tsx`: Modal tra cứu cú pháp Regex cheat sheet dạng bảng.
+- **Tích hợp Axios cho toàn bộ tầng HTTP Client (`src/services/http/`):**
+  - Chuyển đổi động cơ gửi request từ Fetch API sang **Axios** chuyên dụng.
+  - Cấu hình `validateStatus: () => true` giúp hiển thị đầy đủ chi tiết response từ server kể cả với mã trạng thái lỗi 4xx và 5xx.
+  - Tích hợp `AbortController.signal` cho chức năng Cancel Request tức thời.
+  - Xử lý và ánh xạ chuẩn hóa các mã lỗi Axios: `ERR_NETWORK` (CORS/Network error), `ECONNABORTED` (Request Timeout), `ERR_CANCELED` (User abort).
 - **Tối ưu hóa kiểm thử & build:**
   - Cấu hình Vitest tối ưu (`fileParallelism: false`) giải quyết triệt để cảnh báo cạn kiệt bộ nhớ worker trên Windows.
-  - 100% kiểm thử đạt chuẩn (46/46 unit tests passing), build bundle tối ưu không lỗi.
+  - Mở rộng bộ kiểm thử lên **49/49 unit tests passed** (8/8 test suites đạt 100%), build production bundle tối ưu không lỗi.
 
 ### [1.2.0] - 19/10/2026 (Feature Expansion)
 - **Công cụ mới — Regex Tester & Builder (`F-15`):**

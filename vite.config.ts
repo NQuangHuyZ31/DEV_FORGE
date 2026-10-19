@@ -11,6 +11,9 @@ export default defineConfig({
       '@': path.resolve(import.meta.dirname, './src'),
     },
   },
+  optimizeDeps: {
+    exclude: ['axios'],
+  },
   test: {
     globals: true,
     environment: 'node',

@@ -1,6 +1,7 @@
+import axios, { type AxiosRequestConfig, type AxiosResponse, isAxiosError } from 'axios'
 import type { HttpRequest, HttpResponse, HttpErrorInfo } from '@/types/http'
 import { buildRequest } from './request-builder'
-import { parseResponse } from './response-parser'
+import { parseAxiosResponse } from './response-parser'
 import { mapHttpError } from './error-mapper'
 
 export interface ExecuteResult {
@@ -30,7 +31,7 @@ export class HttpClient {
   }
 
   /**
-   * Execute an HTTP request
+   * Execute an HTTP request via Axios
    */
   public async execute(req: HttpRequest): Promise<ExecuteResult> {
     // 1. Build and validate request before dispatch
@@ -53,32 +54,29 @@ export class HttpClient {
     this.activeAbortController = controller
     const timeoutMs = req.timeoutMs || 30000
 
-    let timeoutId: number | null = null
     const startTime = performance.now()
 
     try {
-      // Set up client-side timeout
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        timeoutId = window.setTimeout(() => {
-          controller.abort()
-          reject(new Error(`Request timed out after ${timeoutMs}ms`))
-        }, timeoutMs)
-      })
-
-      const fetchPromise = fetch(built.fullUrl, {
+      const axiosConfig: AxiosRequestConfig = {
+        url: built.fullUrl,
         method: req.method,
         headers: built.headers,
-        body: built.body,
+        data: built.body,
         signal: controller.signal,
-      })
+        timeout: timeoutMs,
+        // Accept all HTTP status codes so client-side 4xx and 5xx responses are fully viewable
+        validateStatus: () => true,
+        // Preserve raw text body to prevent precision loss or unwanted mutations
+        responseType: 'text',
+        transformResponse: [(data) => data],
+      }
 
-      const rawResponse = await Promise.race([fetchPromise, timeoutPromise])
+      const axiosResponse: AxiosResponse = await axios.request(axiosConfig)
       const durationMs = Math.round(performance.now() - startTime)
 
-      if (timeoutId) clearTimeout(timeoutId)
       this.activeAbortController = null
 
-      const response = await parseResponse(rawResponse, durationMs)
+      const response = parseAxiosResponse(axiosResponse, durationMs)
 
       if (!response.ok) {
         return {
@@ -93,9 +91,17 @@ export class HttpClient {
         response,
       }
     } catch (err: unknown) {
-      if (timeoutId) clearTimeout(timeoutId)
       this.activeAbortController = null
       const durationMs = Math.round(performance.now() - startTime)
+
+      if (isAxiosError(err) && err.response) {
+        const response = parseAxiosResponse(err.response, durationMs)
+        return {
+          success: false,
+          response,
+          error: mapHttpError(err, durationMs, response),
+        }
+      }
 
       return {
         success: false,
