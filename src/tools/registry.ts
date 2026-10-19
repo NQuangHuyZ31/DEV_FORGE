@@ -57,6 +57,17 @@ export const toolsRegistry: ToolMetadata[] = [
     badge: 'Core',
   },
   {
+    id: 'regex-tester',
+    code: 'F-15',
+    name: 'Regex Tester & Builder',
+    shortName: 'Regex Tester',
+    description: 'Real-time regular expression tester, match highlighting, groups capture, substitution, and cheat sheet.',
+    category: 'data',
+    icon: 'SearchOutlined',
+    tags: ['regex', 'regexp', 'regular expression', 'pattern', 'test', 'replace', 'match'],
+    badge: 'Pro',
+  },
+  {
     id: 'api-client',
     code: 'F-09',
     name: 'REST API Client',

@@ -8,6 +8,7 @@ import {
   LinkOutlined,
   SendOutlined,
   ApartmentOutlined,
+  SearchOutlined,
 } from '@ant-design/icons'
 import type { ToolId } from '@/types/tools'
 import { toolsRegistry } from '@/tools/registry'
@@ -22,6 +23,7 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   LinkOutlined: <LinkOutlined />,
   SendOutlined: <SendOutlined />,
   ApartmentOutlined: <ApartmentOutlined />,
+  SearchOutlined: <SearchOutlined />,
 }
 
 interface AppSidebarProps {

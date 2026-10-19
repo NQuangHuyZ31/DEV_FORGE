@@ -4,6 +4,7 @@ export type ToolId =
   | 'uuid'
   | 'timestamp'
   | 'url-encoder'
+  | 'regex-tester'
   | 'api-client'
   | 'api-explorer'
 

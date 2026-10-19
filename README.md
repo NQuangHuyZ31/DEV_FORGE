@@ -6,8 +6,8 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue.svg)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-8-purple.svg)](https://vite.dev/)
 [![Ant Design](https://img.shields.io/badge/Ant%20Design-5%2B-1677ff.svg)](https://ant.design/)
-[![Tests](https://img.shields.io/badge/Vitest-34%20passed-brightgreen.svg)](https://vitest.dev/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)]()
+[![Tests](https://img.shields.io/badge/Vitest-46%20passed-brightgreen.svg)](https://vitest.dev/)
+[![Version](https://img.shields.io/badge/Version-1.2.0-blue.svg)]()
 
 ---
 
@@ -34,10 +34,23 @@ DevForge được xây dựng theo kiến trúc Single Page Application (SPA), c
 
 ### 1. Data Utilities (Công cụ xử lý dữ liệu)
 - **JSON Formatter & Validator (F-01):** Định dạng JSON 2 spaces, 4 spaces hoặc Minify; kiểm tra tính hợp lệ theo RFC 8259, hiển thị vị trí lỗi cú pháp (dòng, cột); giữ nguyên nội dung khi gặp lỗi.
-- **Base64 Encoder / Decoder (F-02):** Mã hóa và giải mã văn bản an toàn UTF-8 (hỗ trợ đầy đủ tiếng Việt có dấu và emoji như 🇻🇳, 🚀).
+- **Base64 Multi-Format Suite (F-02):**
+  - **Text / String:** Mã hóa và giải mã an toàn UTF-8 (tiếng Việt có dấu, emoji).
+  - **Base64URL:** Hỗ trợ chuẩn RFC 4648 §5 (ký tự `-`, `_`), tùy chọn lược bỏ padding cho JWT/URL.
+  - **Hex Bytes <-> Base64:** Chuyển đổi 2 chiều giữa chuỗi Hex và Base64 (hỗ trợ phân tách dấu cách).
+  - **File & Image Data URL:** Kéo thả tệp/ảnh để tạo Data URL, mã nhúng HTML `<img>`, xem trước ảnh trực tiếp và tải file nhị phân về máy.
+  - **Line Wrap:** Tùy chọn ngắt dòng 64 ký tự (PEM) hoặc 76 ký tự (MIME).
 - **UUID v4 Generator (F-03):** Sinh UUID Version 4 chuẩn RFC 4122 từ 1 đến 100 mã; tùy chọn chữ hoa/thường và dấu gạch nối; sử dụng Web Crypto (`crypto.randomUUID()` và `crypto.getRandomValues()`).
 - **Timestamp Converter (F-04):** Chuyển đổi Unix timestamp (giây & mili-giây) sang UTC (ISO 8601), Local time và thời gian tương đối ("5 minutes ago"); chuyển đổi từ Date Picker sang timestamp; hiển thị đồng hồ epoch theo thời gian thực.
 - **URL Encoder / Decoder (F-05):** Hỗ trợ chế độ URL Component (`encodeURIComponent`) và Full URL (`encodeURI`); xử lý chuỗi Unicode và báo lỗi percent-encoding không hợp lệ.
+- **Regex Tester & Builder (F-15):**
+  - Kiểm tra biểu thức chính quy theo thời gian thực với các cờ flags (`g`, `i`, `m`, `s`, `u`).
+  - Highlight trực quan các đoạn văn bản khớp với tooltip vị trí index.
+  - Bóc tách chi tiết Capture Groups và Named Groups (`(?<name>...)`).
+  - Chế độ Thay Thế (Substitution / Replace) với hỗ trợ cú pháp `$1`, `$2`, `$&`.
+  - Trình tạo biểu thức chính quy nhanh (Regex Generator).
+  - Thư viện mẫu có sẵn (Email, SĐT Việt Nam, Web URL, IPv4, Hex Color, Date ISO, Strong Password, Tiếng Việt Unicode, Slug, HTML Tag).
+  - Bảng tra cứu cú pháp nhanh (Cheat Sheet).
 
 ### 2. REST API Cockpit (Kiểm thử HTTP API)
 - **In-Browser REST Client (F-09):** Hỗ trợ đầy đủ các phương thức `GET`, `POST`, `PUT`, `PATCH`, `DELETE`.
@@ -152,6 +165,22 @@ npm run preview
 ---
 
 ## 📝 Lịch sử phiên bản (Changelog)
+
+### [1.2.0] - 19/10/2026 (Feature Expansion)
+- **Công cụ mới — Regex Tester & Builder (`F-15`):**
+  - Kiểm tra biểu thức chính quy trực quan theo thời gian thực với các cờ `g`, `i`, `m`, `s`, `u`.
+  - Highlight trực quan vị trí và nội dung khớp trong đoạn văn bản.
+  - Bóc tách chi tiết Capture Groups ($1, $2,...) và Named Groups.
+  - Chế độ Thay Thế (Substitution / Replace) với hỗ trợ token đặc biệt.
+  - Trình tạo Regex tự động (Quick Builder) theo các tiêu chí (chữ số, chữ cái, anchor, quantifier).
+  - Tích hợp 10+ mẫu Regex phổ biến (Email, SĐT VN, Web URL, IPv4, Hex Color, Date ISO, Strong Password, Tiếng Việt có dấu, Kebab Slug, HTML Tag).
+  - Modal Bảng tra cứu cú pháp nhanh (Cheat Sheet).
+- **Mở rộng bộ công cụ Base64 Multi-Format Suite (`F-02`):**
+  - Hỗ trợ chuẩn URL-Safe Base64 (Base64URL — RFC 4648 §5) với cờ tắt/bật padding (`=`).
+  - Chuyển đổi 2 chiều giữa Hex Bytes và Base64 (hỗ trợ phân tách khoảng trắng).
+  - Kéo thả tệp/ảnh tạo Data URL, mã HTML `<img>`, xem trước hình ảnh trực tiếp và tải file nhị phân đã giải mã.
+  - Tùy chọn ngắt dòng 64 ký tự (PEM) và 76 ký tự (MIME).
+- **Mở rộng kiểm thử:** Bổ sung unit tests cho Regex engine và Base64 mở rộng (46/46 tests passed).
 
 ### [1.1.0] - 19/10/2026 (MVP Release)
 - **Khởi tạo dự án:** Thiết lập source code React 19 + TypeScript + Vite + Ant Design.

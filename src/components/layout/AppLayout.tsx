@@ -9,6 +9,7 @@ import { Base64Tool } from '@/tools/base64/Base64Tool'
 import { UuidTool } from '@/tools/uuid/UuidTool'
 import { TimestampTool } from '@/tools/timestamp/TimestampTool'
 import { UrlEncoderTool } from '@/tools/url-encoder/UrlEncoderTool'
+import { RegexTesterTool } from '@/tools/regex-tester/RegexTesterTool'
 import { ApiClientTool } from '@/tools/api-client/ApiClientTool'
 import { ApiExplorerTool } from '@/tools/api-explorer/ApiExplorerTool'
 import { CorsInfoModal } from '@/components/common/CorsInfoModal'
@@ -49,6 +50,8 @@ export const AppLayout: React.FC = () => {
         return <TimestampTool />
       case 'url-encoder':
         return <UrlEncoderTool />
+      case 'regex-tester':
+        return <RegexTesterTool />
       case 'api-client':
         return (
           <ApiClientTool
