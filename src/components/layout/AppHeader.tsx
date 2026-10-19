@@ -32,10 +32,10 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
           <div className="logo-badge">
             <CodeOutlined style={{ fontSize: 20, color: '#fff' }} />
           </div>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div className="brand-text-container">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, lineHeight: 1 }}>
               <span className="brand-title">DevForge</span>
-              <Tag color="blue" bordered={false} style={{ fontSize: 11, padding: '0 6px', fontWeight: 600 }}>
+              <Tag color="blue" bordered={false} style={{ fontSize: 11, padding: '0 6px', fontWeight: 600, margin: 0, lineHeight: '18px' }}>
                 v1.3
               </Tag>
             </div>

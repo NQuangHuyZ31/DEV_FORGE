@@ -55,11 +55,17 @@ body {
   justify-content: space-between;
   padding: 0 24px !important;
   height: 64px !important;
-  line-height: 64px !important;
+  line-height: normal !important;
   position: sticky;
   top: 0;
   z-index: 100;
   backdrop-filter: blur(8px);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  line-height: normal;
 }
 
 .logo-badge {
@@ -71,24 +77,42 @@ body {
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 12px rgba(22, 119, 255, 0.3);
+  flex-shrink: 0;
+}
+
+.brand-text-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: normal;
 }
 
 .brand-title {
   font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.4px;
+  line-height: 1.2;
 }
 
 .brand-subtitle {
   font-size: 11px;
   color: var(--text-secondary);
-  line-height: 1.1;
+  line-height: 1.2;
+  margin-top: 2px;
+  white-space: nowrap;
 }
 
 .header-center {
   flex: 1;
   max-width: 480px;
   margin: 0 24px;
+  line-height: normal;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  line-height: normal;
 }
 
 .search-input {

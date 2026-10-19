@@ -104,7 +104,7 @@ export const AppLayout: React.FC = () => {
 
               <Footer style={{ textAlign: 'center', padding: '16px 0', fontSize: 13 }}>
                 <Text type="secondary">
-                  DevForge MVP v1.1 • Privacy First (In-Browser Execution Only) • Built with React, TypeScript & Ant Design
+                  DevForge v1.3 • Privacy First (In-Browser Execution Only) • Built with React, TypeScript & Ant Design
                 </Text>
               </Footer>
             </Layout>
