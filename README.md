@@ -1,0 +1,179 @@
+# DevForge 🛠️
+
+> **DevForge** là bộ công cụ tiện ích dành cho lập trình viên (Developer Toolbox & Cockpit) hoạt động hoàn toàn trên trình duyệt, kết hợp các công cụ xử lý dữ liệu tiện lợi với một REST API Client trực quan, hiện đại và bảo mật.
+
+[![React](https://img.shields.io/badge/React-19-blue.svg)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue.svg)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-8-purple.svg)](https://vite.dev/)
+[![Ant Design](https://img.shields.io/badge/Ant%20Design-5%2B-1677ff.svg)](https://ant.design/)
+[![Tests](https://img.shields.io/badge/Vitest-34%20passed-brightgreen.svg)](https://vitest.dev/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)]()
+
+---
+
+## 📌 Mục lục
+
+- [Tổng quan](#-tổng-quan)
+- [Tính năng chính](#-tính-năng-chính)
+- [Công nghệ sử dụng](#-công-nghệ-sử-dụng)
+- [Cấu trúc thư mục](#-cấu-trúc-thư-mục)
+- [Cài đặt & Hướng dẫn chạy](#-cài-đặt--hướng-dẫn-chạy)
+- [Chính sách bảo mật & CORS](#-chính-sách-bảo-mật--cors)
+- [Lịch sử phiên bản (Changelog)](#-lịch-sử-phiên-bản-changelog)
+- [Quy tắc cập nhật tài liệu](#-quy-tắc-cập-nhật-tài-liệu)
+
+---
+
+## 🌟 Tổng quan
+
+DevForge được xây dựng theo kiến trúc Single Page Application (SPA), chạy 100% phía client (in-browser execution). Người dùng có thể xử lý dữ liệu và gửi HTTP request trực tiếp mà không cần backend trung gian, đảm bảo tốc độ cao, giao diện mượt mà và an toàn quyền riêng tư.
+
+---
+
+## 🚀 Tính năng chính
+
+### 1. Data Utilities (Công cụ xử lý dữ liệu)
+- **JSON Formatter & Validator (F-01):** Định dạng JSON 2 spaces, 4 spaces hoặc Minify; kiểm tra tính hợp lệ theo RFC 8259, hiển thị vị trí lỗi cú pháp (dòng, cột); giữ nguyên nội dung khi gặp lỗi.
+- **Base64 Encoder / Decoder (F-02):** Mã hóa và giải mã văn bản an toàn UTF-8 (hỗ trợ đầy đủ tiếng Việt có dấu và emoji như 🇻🇳, 🚀).
+- **UUID v4 Generator (F-03):** Sinh UUID Version 4 chuẩn RFC 4122 từ 1 đến 100 mã; tùy chọn chữ hoa/thường và dấu gạch nối; sử dụng Web Crypto (`crypto.randomUUID()` và `crypto.getRandomValues()`).
+- **Timestamp Converter (F-04):** Chuyển đổi Unix timestamp (giây & mili-giây) sang UTC (ISO 8601), Local time và thời gian tương đối ("5 minutes ago"); chuyển đổi từ Date Picker sang timestamp; hiển thị đồng hồ epoch theo thời gian thực.
+- **URL Encoder / Decoder (F-05):** Hỗ trợ chế độ URL Component (`encodeURIComponent`) và Full URL (`encodeURI`); xử lý chuỗi Unicode và báo lỗi percent-encoding không hợp lệ.
+
+### 2. REST API Cockpit (Kiểm thử HTTP API)
+- **In-Browser REST Client (F-09):** Hỗ trợ đầy đủ các phương thức `GET`, `POST`, `PUT`, `PATCH`, `DELETE`.
+- **Query Params & Headers Editor:** Bảng chỉnh sửa Key-Value trực quan với tùy chọn bật/tắt từng trường.
+- **Payload & Body Options:** Hỗ trợ `none`, `JSON (application/json)` có nút làm đẹp/kiểm tra cú pháp trước khi gửi, và `Raw Text (text/plain)`.
+- **Authentication (F-12):** Hỗ trợ `Bearer Token` và `API Key` (gửi qua Header hoặc Query Parameter) với nút ẩn/hiện giá trị an toàn.
+- **Response Viewer (F-11 & F-14):** Hiển thị HTTP Status Code, thời gian phản hồi (ms), dung lượng dữ liệu, Content-Type, xem dưới dạng JSON có format hoặc text thô, nút sao chép và tải file response.
+- **Cơ chế kiểm soát:** Nút Cancel request bằng `AbortController`, timeout mặc định 30s, chống spam/click kép, giới hạn an toàn 5MB tránh đơ trình duyệt.
+- **Predefined APIs Explorer (F-10):** Tích hợp sẵn mẫu API công khai có CORS như **JSONPlaceholder** và **DummyJSON**; hỗ trợ tính năng **Quick Run** và **Open in API Client**.
+
+### 3. Trải nghiệm & Giao diện (F-06, F-07, F-08)
+- Giao diện Cockpit phong cách lập trình viên hiện đại, hỗ trợ chuyển đổi **Dark / Light Mode**.
+- Thanh tìm kiếm lọc công cụ theo thời gian thực.
+- Tiện ích Clipboard thống nhất với thông báo feedback trực quan và cơ chế fallback.
+- Thiết kế responsive tối ưu cho cả desktop lẫn thiết bị di động.
+
+---
+
+## 🛠️ Công nghệ sử dụng
+
+| Thành phần | Công nghệ | Phiên bản |
+|---|---|---|
+| **Core UI** | React | 19.x |
+| **Language** | TypeScript | 5.x / 7.x (Strict mode) |
+| **Bundler** | Vite | 8.x |
+| **Design System** | Ant Design (`antd`) & `@ant-design/icons` | 5.x / 6.x |
+| **HTTP Client** | Browser Fetch API + `AbortController` | Native |
+| **Testing** | Vitest | 5.x |
+| **Date Time** | Day.js | 1.x |
+
+---
+
+## 📂 Cấu trúc thư mục
+
+```text
+DevForge/
+├── .agents/                    # Quy tắc và hướng dẫn của AI Agent
+├── public/                     # Static assets công khai
+├── src/
+│   ├── components/
+│   │   ├── common/             # Reusable UI (CopyButton, StatusBadge, CorsInfoModal)
+│   │   └── layout/             # Shell, Header, Sidebar, Layout chính
+│   ├── integrations/           # Cấu hình các API định sẵn (JSONPlaceholder, DummyJSON)
+│   ├── services/
+│   │   └── http/               # HTTP client, request builder, response parser, error mapper
+│   ├── tools/                  # Các module công cụ độc lập
+│   │   ├── json-formatter/
+│   │   ├── base64/
+│   │   ├── uuid/
+│   │   ├── timestamp/
+│   │   ├── url-encoder/
+│   │   ├── api-client/
+│   │   └── api-explorer/
+│   ├── types/                  # TypeScript interface và type definitions
+│   ├── utils/                  # Hàm logic thuần túy (JSON, Base64, UUID, URL, Timestamp, Clipboard)
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── index.css               # Theme tokens, font JetBrains Mono & Inter
+├── DEVFORGE_REQUIREMENT.md     # Tài liệu đặc tả hệ thống gốc
+├── DEVFORGE.md                 # Tóm tắt kỹ thuật & trạng thái cập nhật dự án
+├── README.md                   # Tài liệu hướng dẫn sử dụng & tổng quan
+├── package.json
+├── tsconfig.json
+└── vite.config.ts
+```
+
+---
+
+## 💻 Cài đặt & Hướng dẫn chạy
+
+### Yêu cầu môi trường
+- **Node.js:** phiên bản >= 18 (khuyên dùng Node 20 hoặc 24 LTS)
+- **NPM:** phiên bản >= 9
+
+### 1. Cài đặt dependencies
+```bash
+npm install
+```
+
+### 2. Chạy môi trường phát triển (Development)
+```bash
+npm run dev
+```
+Truy cập ứng dụng tại: `http://localhost:5173/`
+
+### 3. Chạy bộ kiểm thử (Unit Tests)
+```bash
+npm test
+```
+Chạy chế độ theo dõi (watch mode):
+```bash
+npm run test:watch
+```
+
+### 4. Build sản phẩm (Production)
+```bash
+npm run build
+npm run preview
+```
+
+---
+
+## 🔒 Chính sách bảo mật & CORS
+
+1. **Bảo vệ Credential:**
+   - DevForge **KHÔNG BAO GIỜ** lưu token xác thực hoặc API key vào `localStorage`, `sessionStorage` hay cookies.
+   - Toàn bộ credential chỉ được giữ trong bộ nhớ (in-memory state) trong phiên làm việc hiện tại.
+2. **Cơ chế CORS của trình duyệt:**
+   - Vì chạy trực tiếp trên trình duyệt, các request đến domain khác phải tuân thủ chính sách CORS của server đích (server phải phản hồi header `Access-Control-Allow-Origin`).
+   - Ứng dụng cung cấp sẵn hướng dẫn và modal giải thích chi tiết khi xảy ra lỗi mạng / CORS để nhà phát triển hiểu rõ nguyên nhân.
+
+---
+
+## 📝 Lịch sử phiên bản (Changelog)
+
+### [1.1.0] - 19/10/2026 (MVP Release)
+- **Khởi tạo dự án:** Thiết lập source code React 19 + TypeScript + Vite + Ant Design.
+- **Hoàn thành các công cụ cốt lõi:**
+  - `F-01`: JSON Formatter & Validator (2 spaces, 4 spaces, Minify, Error highlighting).
+  - `F-02`: Base64 Encoder / Decoder (UTF-8 tiếng Việt & emoji safe).
+  - `F-03`: UUID v4 Generator (1-100 count, uppercase, hyphens options).
+  - `F-04`: Timestamp Converter (Unix epoch s/ms to UTC, Local, Relative time, Date picker).
+  - `F-05`: URL Encoder / Decoder (Component & Full URL modes, Unicode).
+  - `F-06` – `F-08`: Application Shell, Live Search, Unified Clipboard, Responsive design.
+  - `F-09`: In-browser REST API Client (GET, POST, PUT, PATCH, DELETE, Params/Headers/Body/Auth tabs).
+  - `F-10`: Predefined APIs Explorer (JSONPlaceholder & DummyJSON).
+  - `F-11`: Response Viewer (Status, duration, headers, formatted JSON body, raw view, download).
+  - `F-12`: API Authentication (Bearer token, API key header/query, credential masking).
+  - `F-13`: Error handling & CORS guide modal.
+  - `F-14`: Request controls (AbortController, 30s timeout, 5MB response cap, anti-duplicate click).
+- **Kiểm thử:** Viết 34 unit tests với Vitest, 100% passed.
+
+---
+
+## 📜 Quy tắc cập nhật tài liệu
+
+> **BẮT BUỘC:** Mỗi khi bổ sung chức năng mới, thay đổi luồng xử lý hoặc nâng cấp phiên bản:
+> 1. Cập nhật file **`README.md`** (cập nhật mô tả tính năng, hướng dẫn sử dụng, cấu hình và bảng changelog).
+> 2. Cập nhật file **`DEVFORGE.md`** (cập nhật chi tiết kỹ thuật, trạng thái tính năng, cấu trúc file, mô hình dữ liệu).
