@@ -7,7 +7,7 @@
 [![Vite](https://img.shields.io/badge/Vite-8-purple.svg)](https://vite.dev/)
 [![Ant Design](https://img.shields.io/badge/Ant%20Design-5%2B-1677ff.svg)](https://ant.design/)
 [![Tests](https://img.shields.io/badge/Vitest-46%20passed-brightgreen.svg)](https://vitest.dev/)
-[![Version](https://img.shields.io/badge/Version-1.2.0-blue.svg)]()
+[![Version](https://img.shields.io/badge/Version-1.3.0-blue.svg)]()
 
 ---
 
@@ -96,14 +96,18 @@ DevForge/
 │   ├── integrations/           # Cấu hình các API định sẵn (JSONPlaceholder, DummyJSON)
 │   ├── services/
 │   │   └── http/               # HTTP client, request builder, response parser, error mapper
-│   ├── tools/                  # Các module công cụ độc lập
-│   │   ├── json-formatter/
-│   │   ├── base64/
-│   │   ├── uuid/
-│   │   ├── timestamp/
-│   │   ├── url-encoder/
-│   │   ├── api-client/
-│   │   └── api-explorer/
+│   ├── tools/                  # Các module công cụ độc lập (Kiến trúc Component hóa)
+│   │   ├── json-formatter/     # Formatter & Validator JSON
+│   │   ├── base64/             # Base64 Multi-Format Suite
+│   │   │   └── components/     # Subcomponents: Text, File, Hex tabs
+│   │   ├── uuid/               # UUID v4 Generator
+│   │   ├── timestamp/          # Timestamp Converter
+│   │   ├── url-encoder/        # URL Encoder / Decoder
+│   │   ├── regex-tester/       # Regex Tester & Builder
+│   │   │   └── components/     # Subcomponents: PatternBar, Preview, Matches, Replace, Modals
+│   │   ├── api-client/         # REST API Client Cockpit
+│   │   │   └── components/     # Subcomponents: UrlBar, Params, Headers, Body, Auth, ResponseViewer
+│   │   └── api-explorer/       # Predefined APIs Explorer (JSONPlaceholder, DummyJSON)
 │   ├── types/                  # TypeScript interface và type definitions
 │   ├── utils/                  # Hàm logic thuần túy (JSON, Base64, UUID, URL, Timestamp, Clipboard)
 │   ├── App.tsx
@@ -165,6 +169,31 @@ npm run preview
 ---
 
 ## 📝 Lịch sử phiên bản (Changelog)
+
+### [1.3.0] - 19/10/2026 (Architecture Modularization & Refactoring)
+- **Tái cấu trúc mã nguồn (Refactoring & De-monolithization):**
+  - Phân rã toàn bộ các file công cụ đơn khối lớn (>600 - 750 dòng) thành các subcomponents độc lập, dễ bảo trì và mở rộng trong thư mục `components/` của từng tool.
+  - **REST API Client (`src/tools/api-client/components/`):**
+    - `RequestUrlBar.tsx`: Thanh cấu hình HTTP Method, URL endpoint và nút kích hoạt/hủy request.
+    - `ParamsTab.tsx`: Bảng quản lý Query Parameters dạng Key-Value (bật/tắt linh hoạt).
+    - `HeadersTab.tsx`: Bảng quản lý Request Headers dạng Key-Value.
+    - `BodyTab.tsx`: Trình biên tập Payload (JSON/Raw) có tính năng kiểm tra lỗi cú pháp và làm đẹp tự động.
+    - `AuthTab.tsx`: Cấu hình xác thực Bearer Token, API Key (Header/Query) kèm tính năng che mật khẩu.
+    - `ResponseViewer.tsx`: Bảng hiển thị kết quả phản hồi HTTP (status, metrics, headers, formatted JSON tree, raw text, copy & download).
+  - **Base64 Multi-Format Suite (`src/tools/base64/components/`):**
+    - `Base64TextTab.tsx`: Xử lý văn bản UTF-8, Base64URL, tùy chọn padding và ngắt dòng.
+    - `Base64FileTab.tsx`: Xử lý kéo thả tệp, sinh Data URL, mã nhúng thẻ `<img>`, preview ảnh và tải file nhị phân.
+    - `Base64HexTab.tsx`: Chuyển đổi 2 chiều Hex Bytes <-> Base64.
+  - **Regex Tester & Builder (`src/tools/regex-tester/components/`):**
+    - `RegexPatternBar.tsx`: Nhập biểu thức chính quy, thông báo lỗi cú pháp và bật tắt cờ flags.
+    - `RegexHighlightPreview.tsx`: Hiển thị highlight trực quan các đoạn khớp theo vị trí index và thống kê số lượng khớp.
+    - `RegexMatchesList.tsx`: Danh sách bóc tách chi tiết capture groups và named groups.
+    - `RegexReplaceTab.tsx`: Playground thay thế chuỗi (substitution) hỗ trợ cú pháp `$1`, `$2`, `$&`.
+    - `RegexBuilderModal.tsx`: Modal tạo nhanh biểu thức chính quy theo cấu hình trực quan.
+    - `RegexCheatSheetModal.tsx`: Modal tra cứu cú pháp Regex cheat sheet dạng bảng.
+- **Tối ưu hóa kiểm thử & build:**
+  - Cấu hình Vitest tối ưu (`fileParallelism: false`) giải quyết triệt để cảnh báo cạn kiệt bộ nhớ worker trên Windows.
+  - 100% kiểm thử đạt chuẩn (46/46 unit tests passing), build bundle tối ưu không lỗi.
 
 ### [1.2.0] - 19/10/2026 (Feature Expansion)
 - **Công cụ mới — Regex Tester & Builder (`F-15`):**

@@ -36,7 +36,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span className="brand-title">DevForge</span>
               <Tag color="blue" bordered={false} style={{ fontSize: 11, padding: '0 6px', fontWeight: 600 }}>
-                MVP v1.1
+                v1.3
               </Tag>
             </div>
             <div className="brand-subtitle">Developer Utilities & API Cockpit</div>
