@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Card, Space, Typography, Tag, Radio, Tooltip, Button, Spin, Alert, Tabs, Empty, Input } from 'antd'
-import { DownloadOutlined } from '@ant-design/icons'
+import { DownloadOutlined, ThunderboltOutlined } from '@ant-design/icons'
 import type { HttpResponse, HttpErrorInfo } from '@/types/http'
 import { StatusBadge } from '@/components/common/StatusBadge'
 import { CopyButton } from '@/components/common/CopyButton'
@@ -13,6 +13,7 @@ interface ResponseViewerProps {
   response: HttpResponse | null
   errorInfo: HttpErrorInfo | null
   onOpenCorsGuide: () => void
+  onRetryWithProxy?: () => void
 }
 
 export const ResponseViewer: React.FC<ResponseViewerProps> = ({
@@ -20,6 +21,7 @@ export const ResponseViewer: React.FC<ResponseViewerProps> = ({
   response,
   errorInfo,
   onOpenCorsGuide,
+  onRetryWithProxy,
 }) => {
   const [rawView, setRawView] = useState<boolean>(false)
 
@@ -39,7 +41,7 @@ export const ResponseViewer: React.FC<ResponseViewerProps> = ({
   return (
     <Card
       title={
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', flexWrap: 'wrap', gap: 8 }}>
           <Space size="middle" wrap>
             <Text strong>Response</Text>
             {response && (
@@ -54,6 +56,12 @@ export const ResponseViewer: React.FC<ResponseViewerProps> = ({
                 {response.contentType && (
                   <Tag color="cyan" style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {response.contentType.split(';')[0]}
+                  </Tag>
+                )}
+                {response.isProxied && (
+                  <Tag color="purple">
+                    <ThunderboltOutlined style={{ marginRight: 3 }} />
+                    Proxied (Bypassed CORS)
                   </Tag>
                 )}
               </>
@@ -107,13 +115,25 @@ export const ResponseViewer: React.FC<ResponseViewerProps> = ({
                 </Paragraph>
               )}
               {errorInfo.group === 'cors' && (
-                <Button
-                  type="primary"
-                  size="small"
-                  onClick={onOpenCorsGuide}
-                >
-                  Open CORS & Testing Guide
-                </Button>
+                <Space style={{ marginTop: 8 }} wrap>
+                  {onRetryWithProxy && (
+                    <Button
+                      type="primary"
+                      size="small"
+                      icon={<ThunderboltOutlined />}
+                      style={{ background: '#722ed1', borderColor: '#722ed1' }}
+                      onClick={onRetryWithProxy}
+                    >
+                      ⚡ Thử lại bằng CORS Proxy (Bypass CORS)
+                    </Button>
+                  )}
+                  <Button
+                    size="small"
+                    onClick={onOpenCorsGuide}
+                  >
+                    Xem Hướng Dẫn CORS
+                  </Button>
+                </Space>
               )}
             </div>
           }
@@ -146,30 +166,19 @@ export const ResponseViewer: React.FC<ResponseViewerProps> = ({
               key: 'headers',
               label: `Headers (${Object.keys(response.headers).length})`,
               children: (
-                <div>
-                  <Paragraph type="secondary" style={{ fontSize: 13 }}>
-                    Note: Browsers restrict JavaScript from accessing sensitive headers (like Set-Cookie) due to CORS security policies.
-                  </Paragraph>
-                  <table className="key-value-table">
+                <div style={{ maxHeight: 350, overflowY: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, fontFamily: 'monospace' }}>
                     <thead>
-                      <tr>
-                        <th style={{ width: '35%' }}>Header</th>
-                        <th>Value</th>
-                        <th style={{ width: 60 }}>Copy</th>
+                      <tr style={{ borderBottom: '1px solid var(--border-color)', textAlign: 'left' }}>
+                        <th style={{ padding: '8px 12px', width: '35%' }}>Header Name</th>
+                        <th style={{ padding: '8px 12px' }}>Value</th>
                       </tr>
                     </thead>
                     <tbody>
                       {Object.entries(response.headers).map(([k, v]) => (
-                        <tr key={k}>
-                          <td>
-                            <Text code>{k}</Text>
-                          </td>
-                          <td>
-                            <Text>{v}</Text>
-                          </td>
-                          <td style={{ textAlign: 'center' }}>
-                            <CopyButton text={v} size="small" type="text" />
-                          </td>
+                        <tr key={k} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                          <td style={{ padding: '6px 12px', color: '#1677ff', fontWeight: 600 }}>{k}</td>
+                          <td style={{ padding: '6px 12px', wordBreak: 'break-all' }}>{v}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -181,10 +190,15 @@ export const ResponseViewer: React.FC<ResponseViewerProps> = ({
         />
       )}
 
+      {/* Empty State */}
       {!loading && !response && !errorInfo && (
         <Empty
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description="Enter an HTTP URL and click Send to inspect response headers and payload."
+          description={
+            <span>
+              Chưa có phản hồi nào. Hãy nhập URL và nhấn <strong>Send</strong> để gửi request.
+            </span>
+          }
+          style={{ padding: '40px 0' }}
         />
       )}
     </Card>

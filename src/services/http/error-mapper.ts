@@ -82,8 +82,8 @@ export function mapHttpError(
       group: 'cors',
       title: 'Network / CORS Error',
       message:
-        'The browser could not complete the request. This usually happens when the target API does not allow Cross-Origin Resource Sharing (CORS) from browser clients, or the server is offline.',
-      hint: 'Web browsers enforce strict CORS security. To test in browser, the server must return the "Access-Control-Allow-Origin: *" header, or you can test against CORS-enabled public APIs (such as JSONPlaceholder).',
+        'Trình duyệt đã chặn request do chính sách CORS hoặc kết nối bị từ chối. Dù bên kia là API công khai (public), trình duyệt vẫn bắt buộc server đích phải phản hồi header "Access-Control-Allow-Origin: *" và cho phép preflight OPTIONS.',
+      hint: 'Bạn có thể bật tính năng "CORS Proxy" (Bypass CORS) hoặc bấm "Thử lại bằng CORS Proxy" để vượt qua rào cản CORS của trình duyệt.',
     }
   }
 

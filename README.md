@@ -7,8 +7,8 @@
 [![Vite](https://img.shields.io/badge/Vite-8-purple.svg)](https://vite.dev/)
 [![Ant Design](https://img.shields.io/badge/Ant%20Design-5%2B-1677ff.svg)](https://ant.design/)
 [![Axios](https://img.shields.io/badge/Axios-1.x-5a29e4.svg)](https://axios-http.com/)
-[![Tests](https://img.shields.io/badge/Vitest-49%20passed-brightgreen.svg)](https://vitest.dev/)
-[![Version](https://img.shields.io/badge/Version-1.3.0-blue.svg)]()
+[![Tests](https://img.shields.io/badge/Vitest-50%20passed-brightgreen.svg)](https://vitest.dev/)
+[![Version](https://img.shields.io/badge/Version-1.3.1-blue.svg)]()
 
 ---
 
@@ -19,7 +19,7 @@
 - [Công nghệ sử dụng](#-công-nghệ-sử-dụng)
 - [Cấu trúc thư mục](#-cấu-trúc-thư-mục)
 - [Cài đặt & Hướng dẫn chạy](#-cài-đặt--hướng-dẫn-chạy)
-- [Chính sách bảo mật & CORS](#-chính-sách-bảo-mật--cors)
+- [Chính sách bảo mật & Xử lý CORS](#-chính-sách-bảo-mật--xử-lý-cors)
 - [Lịch sử phiên bản (Changelog)](#-lịch-sử-phiên-bản-changelog)
 - [Quy tắc cập nhật tài liệu](#-quy-tắc-cập-nhật-tài-liệu)
 
@@ -61,6 +61,12 @@ DevForge được xây dựng theo kiến trúc Single Page Application (SPA), c
 - **Response Viewer (F-11 & F-14):** Hiển thị HTTP Status Code, thời gian phản hồi (ms), dung lượng dữ liệu, Content-Type, xem dưới dạng JSON có format hoặc text thô, nút sao chép và tải file response.
 - **Cơ chế kiểm soát:** Nút Cancel request bằng `AbortController`, timeout mặc định 30s, chống spam/click kép, giới hạn an toàn 5MB tránh đơ trình duyệt.
 - **Predefined APIs Explorer (F-10):** Tích hợp sẵn mẫu API công khai có CORS như **JSONPlaceholder** và **DummyJSON**; hỗ trợ tính năng **Quick Run** và **Open in API Client**.
+- **Bypass CORS Proxy Mode (F-13 / F-16):**
+  - Công tắc **Bypass CORS Proxy** trên thanh Request URL cho phép gửi request qua cơ chế Proxy cục bộ (`/api/proxy` chạy trên Vite Dev Server bằng Node.js) hoặc qua Public CORS Proxy fallback (`corsproxy.io`).
+  - Nút hành động trực tiếp **⚡ Thử lại bằng CORS Proxy** tự động xuất hiện ngay trên khung cảnh báo lỗi khi request bị trình duyệt chặn bởi CORS.
+  - Phản hồi định tuyến qua Proxy được đánh dấu rõ ràng với badge **`⚡ Proxied (Bypassed CORS)`**.
+- **Tối ưu hóa Smart Preflight (Tránh lỗi CORS giả):**
+  - Tự động bỏ header `Content-Type: application/json` đối với các HTTP request `GET` không có body payload, loại bỏ hoàn toàn các preflight `OPTIONS` thừa khiến server đích từ chối kết nối.
 
 ### 3. Trải nghiệm & Giao diện (F-06, F-07, F-08)
 - Giao diện Cockpit phong cách lập trình viên hiện đại, mặc định kích hoạt giao diện tối (**Dark Mode**) và hỗ trợ lưu trạng thái tùy chọn qua `localStorage`.
@@ -158,18 +164,39 @@ npm run preview
 
 ---
 
-## 🔒 Chính sách bảo mật & CORS
+## 🔒 Chính sách bảo mật & Xử lý CORS
 
 1. **Bảo vệ Credential:**
    - DevForge **KHÔNG BAO GIỜ** lưu token xác thực hoặc API key vào `localStorage`, `sessionStorage` hay cookies.
    - Toàn bộ credential chỉ được giữ trong bộ nhớ (in-memory state) trong phiên làm việc hiện tại.
-2. **Cơ chế CORS của trình duyệt:**
-   - Vì chạy trực tiếp trên trình duyệt, các request đến domain khác phải tuân thủ chính sách CORS của server đích (server phải phản hồi header `Access-Control-Allow-Origin`).
-   - Ứng dụng cung cấp sẵn hướng dẫn và modal giải thích chi tiết khi xảy ra lỗi mạng / CORS để nhà phát triển hiểu rõ nguyên nhân.
+2. **Cơ chế CORS của trình duyệt đối với Public API:**
+   - **Tại sao API công khai (Public) vẫn bị báo lỗi CORS?**
+     - Khi bạn gọi API từ công cụ Desktop (cURL, Postman), request được gửi trực tiếp qua socket hệ điều hành không có giới hạn CORS.
+     - Tuy nhiên, khi gọi từ trình duyệt Web (DevForge SPA), trình duyệt áp dụng cơ chế bảo mật **Same-Origin Policy**. Nếu server phía xa chưa cấu hình header `Access-Control-Allow-Origin: *`, trình duyệt sẽ chặn response dù API đó là public.
+     - Ngoài ra, nếu client gửi kèm header `Content-Type: application/json` trên request `GET`, trình duyệt sẽ tự động bắn trước một request preflight `OPTIONS`. Nhiều server công khai không xử lý `OPTIONS` nên trả về lỗi 404/405, dẫn tới lỗi CORS giả.
+3. **Giải pháp 2 lớp của DevForge:**
+   - **Lớp 1: Loại bỏ preflight không cần thiết:** Tự động tối ưu header (chỉ gửi `Content-Type` khi thực sự có payload body).
+   - **Lớp 2: Dual CORS Proxy:** 
+     - *Môi trường Dev:* Sử dụng Vite Dev Server Middleware (`/api/proxy`) gửi request qua Node.js ngoài sandbox trình duyệt.
+     - *Môi trường Production / Trực tuyến:* Tự động fallback sang CORS Proxy uy tín (`https://corsproxy.io/?url=`).
+     - Người dùng có thể bật/tắt công tắc **Bypass CORS Proxy** bất kỳ lúc nào hoặc bấm nút **"⚡ Thử lại bằng CORS Proxy"** ngay khi gặp lỗi.
 
 ---
 
 ## 📝 Lịch sử phiên bản (Changelog)
+
+### [1.3.1] - 20/10/2026 (CORS Proxy & Preflight Optimization)
+- **Tính năng Bypass CORS Proxy:**
+  - Bổ sung tùy chọn **Bypass CORS Proxy** trên thanh Request URL Bar giúp gửi request qua máy chủ trung gian để vượt qua rào cản CORS của trình duyệt.
+  - Tích hợp Middleware Proxy cục bộ `/api/proxy` trong Vite Dev Server (`vite.config.ts`), gửi request qua Node.js ngoài sandbox trình duyệt, không ảnh hưởng bởi CORS.
+  - Hỗ trợ cơ chế tự động fallback sang Public CORS Proxy (`corsproxy.io`) khi chạy bản build/môi trường ngoài.
+  - Hiển thị nút hành động nhanh **"⚡ Thử lại bằng CORS Proxy"** ngay trong cảnh báo lỗi khi request bị chặn bởi CORS.
+  - Đánh dấu trạng thái phản hồi qua proxy với badge nhận diện **`⚡ Proxied (Bypassed CORS)`**.
+- **Tối ưu hóa Smart Preflight:**
+  - Fix lỗi phát sinh request preflight `OPTIONS` thừa: Loại bỏ header `Content-Type` mặc định trên các HTTP request `GET` không có payload body.
+- **Nâng cấp kiểm thử:**
+  - Bổ sung kiểm thử logic omit header Content-Type trên GET request không có payload.
+  - Toàn bộ **50/50 unit tests đạt 100%**, build hoàn chỉnh không lỗi.
 
 ### [1.3.0] - 19/10/2026 (Architecture Modularization & Refactoring)
 - **Tái cấu trúc mã nguồn (Refactoring & De-monolithization):**

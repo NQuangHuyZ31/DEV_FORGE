@@ -31,6 +31,7 @@ export interface HttpRequest {
   bodyContent: string
   auth: AuthConfig
   timeoutMs?: number
+  useProxy?: boolean
 }
 
 export interface HttpResponse {
@@ -45,6 +46,7 @@ export interface HttpResponse {
   contentType: string
   sizeBytes: number
   timestamp: number
+  isProxied?: boolean
 }
 
 export type HttpErrorGroup =

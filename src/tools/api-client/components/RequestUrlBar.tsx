@@ -1,7 +1,9 @@
 import React from 'react'
-import { Card, Space, Select, Input, Button } from 'antd'
-import { SendOutlined, StopOutlined } from '@ant-design/icons'
+import { Card, Space, Select, Input, Button, Tag, Tooltip, Typography } from 'antd'
+import { SendOutlined, StopOutlined, ThunderboltOutlined } from '@ant-design/icons'
 import type { HttpMethod } from '@/types/http'
+
+const { Text } = Typography
 
 const METHOD_COLORS: Record<HttpMethod, string> = {
   GET: '#1677ff',
@@ -19,6 +21,8 @@ interface RequestUrlBarProps {
   loading: boolean
   onSend: () => void
   onCancel: () => void
+  useProxy: boolean
+  onUseProxyChange: (useProxy: boolean) => void
 }
 
 export const RequestUrlBar: React.FC<RequestUrlBarProps> = ({
@@ -29,6 +33,8 @@ export const RequestUrlBar: React.FC<RequestUrlBarProps> = ({
   loading,
   onSend,
   onCancel,
+  useProxy,
+  onUseProxyChange,
 }) => {
   return (
     <Card style={{ margin: '16px 0' }} className="url-bar-card">
@@ -72,6 +78,33 @@ export const RequestUrlBar: React.FC<RequestUrlBarProps> = ({
           </Button>
         )}
       </Space.Compact>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10, flexWrap: 'wrap', gap: 8 }}>
+        <Space size="small">
+          <Tooltip title="Bật CORS Proxy để vượt qua chính sách bảo mật CORS của trình duyệt, hỗ trợ gọi thành công mọi API public hoặc local backend.">
+            <Tag.CheckableTag
+              checked={useProxy}
+              onChange={onUseProxyChange}
+              style={{
+                borderRadius: 4,
+                padding: '2px 10px',
+                border: useProxy ? '1px solid #722ed1' : '1px solid rgba(255, 255, 255, 0.15)',
+                background: useProxy ? 'rgba(114, 46, 209, 0.25)' : 'transparent',
+                cursor: 'pointer',
+                fontWeight: 500,
+              }}
+            >
+              <ThunderboltOutlined style={{ color: useProxy ? '#722ed1' : '#8c8c8c', marginRight: 5 }} />
+              {useProxy ? 'CORS Proxy: ĐANG BẬT (Bypass CORS)' : 'CORS Proxy: TẮT (Direct Browser)'}
+            </Tag.CheckableTag>
+          </Tooltip>
+        </Space>
+        {useProxy && (
+          <Text type="secondary" style={{ fontSize: 12 }}>
+            ⚡ Request được định tuyến qua Proxy để bỏ qua kiểm tra Same-Origin của trình duyệt.
+          </Text>
+        )}
+      </div>
     </Card>
   )
 }

@@ -59,7 +59,8 @@ export function buildFullUrl(rawUrl: string, params: KeyValuePair[], auth?: Auth
 export function buildHeaders(
   headers: KeyValuePair[],
   auth?: AuthConfig,
-  bodyType: BodyType = 'none'
+  bodyType: BodyType = 'none',
+  hasBody: boolean = bodyType !== 'none'
 ): Record<string, string> {
   const result: Record<string, string> = {}
 
@@ -70,12 +71,12 @@ export function buildHeaders(
     }
   }
 
-  // Auto Content-Type header if body is present and not explicitly set by user
+  // Auto Content-Type header ONLY if body is present and not explicitly set by user
   const hasContentType = Object.keys(result).some(
     (k) => k.toLowerCase() === 'content-type'
   )
 
-  if (!hasContentType) {
+  if (!hasContentType && hasBody) {
     if (bodyType === 'json') {
       result['Content-Type'] = 'application/json; charset=utf-8'
     } else if (bodyType === 'text') {
@@ -144,7 +145,8 @@ export function buildRequest(req: HttpRequest): BuildRequestResult {
     return { fullUrl: urlRes.fullUrl, headers: {}, error: bodyRes.error }
   }
 
-  const headers = buildHeaders(req.headers, req.auth, req.bodyType)
+  const hasBody = Boolean(bodyRes.body && req.method !== 'GET')
+  const headers = buildHeaders(req.headers, req.auth, req.bodyType, hasBody)
 
   return {
     fullUrl: urlRes.fullUrl,

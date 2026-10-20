@@ -59,6 +59,7 @@ export const ApiClientTool: React.FC<ApiClientToolProps> = ({
   const [response, setResponse] = useState<HttpResponse | null>(null)
   const [errorInfo, setErrorInfo] = useState<HttpErrorInfo | null>(null)
   const [corsModalOpen, setCorsModalOpen] = useState<boolean>(false)
+  const [useProxy, setUseProxy] = useState<boolean>(false)
 
   // Sync when initialRequest prop changes (e.g. from Explorer)
   React.useEffect(() => {
@@ -72,12 +73,14 @@ export const ApiClientTool: React.FC<ApiClientToolProps> = ({
     }
   }, [initialRequest])
 
-  const handleSend = async () => {
+  const handleSend = async (overrideProxy?: boolean) => {
     if (loading) return
 
     setErrorInfo(null)
     setResponse(null)
     setLoading(true)
+
+    const shouldProxy = overrideProxy !== undefined ? overrideProxy : useProxy
 
     const req: HttpRequest = {
       url,
@@ -94,6 +97,7 @@ export const ApiClientTool: React.FC<ApiClientToolProps> = ({
         apiKeyLocation,
       },
       timeoutMs: 30000,
+      useProxy: shouldProxy,
     }
 
     try {
@@ -116,6 +120,11 @@ export const ApiClientTool: React.FC<ApiClientToolProps> = ({
         message: err instanceof Error ? err.message : String(err),
       })
     }
+  }
+
+  const handleRetryWithProxy = () => {
+    setUseProxy(true)
+    handleSend(true)
   }
 
   const handleCancel = () => {
@@ -162,6 +171,8 @@ export const ApiClientTool: React.FC<ApiClientToolProps> = ({
         loading={loading}
         onSend={handleSend}
         onCancel={handleCancel}
+        useProxy={useProxy}
+        onUseProxyChange={setUseProxy}
       />
 
       {/* Configuration Tabs */}
@@ -220,6 +231,7 @@ export const ApiClientTool: React.FC<ApiClientToolProps> = ({
         response={response}
         errorInfo={errorInfo}
         onOpenCorsGuide={() => setCorsModalOpen(true)}
+        onRetryWithProxy={handleRetryWithProxy}
       />
 
       <CorsInfoModal open={corsModalOpen} onClose={() => setCorsModalOpen(false)} />

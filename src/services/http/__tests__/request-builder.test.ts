@@ -79,6 +79,22 @@ describe('HTTP Request Builder', () => {
     expect(built.fullUrl).toBe('https://api.example.com/posts?tag=news')
     expect(built.headers['Authorization']).toBe('Bearer token123')
     expect(built.headers['X-App']).toBe('DevForge')
+    expect(built.headers['Content-Type']).toContain('application/json')
     expect(built.body).toBe('{"title":"Hello"}')
   })
+
+  it('omits Content-Type on GET requests without body to avoid CORS preflight', () => {
+    const req: HttpRequest = {
+      url: 'https://api.example.com/items',
+      method: 'GET',
+      params: [],
+      headers: [],
+      bodyType: 'none',
+      bodyContent: '',
+      auth: { type: 'none' },
+    }
+    const built = buildRequest(req)
+    expect(built.headers['Content-Type']).toBeUndefined()
+  })
 })
+
